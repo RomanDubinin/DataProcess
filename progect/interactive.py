@@ -2,17 +2,14 @@ import cv2
 import sys
 import numpy as np
 import random
-import math
+
+import Constants
+import Helper
+
 from Vector import Vector
 from MovingProvider import MovingProvider
 from Base import Base
-import Constants
-
-def get_random_vector(min_len, max_len):
-    length = random.randint(min_len, max_len)
-    angle  = random.random() * math.pi * 2
-
-    return Vector(length * math.cos(angle), length * math.sin(angle))
+from Enemy import Enemy
 
 video_capture = cv2.VideoCapture(0)
 
@@ -24,6 +21,14 @@ HEIGTH, WIDTH = average_frame.shape
 CENTER = Vector(WIDTH//2,HEIGTH//2)
 base = Base(CENTER, CENTER, WIDTH//2, HEIGTH//2)
 
+enemy_points = [Vector(0, 0), Vector(0, HEIGTH), Vector(WIDTH, 0), Vector(WIDTH, HEIGTH)]
+enemys = []
+for i in range(Constants.ENEMYS_NUM):
+    enemys.append(Enemy(enemy_points[random.randint(0, len(enemy_points) - 1)]))
+
+
+enemy = Enemy(Vector(0, 0))
+
 while True:
     # Capture frame-by-frame
     ret, frame = video_capture.read()
@@ -34,8 +39,18 @@ while True:
         cv2.polylines(frame,cnt,True,(0,255,255))
 
 
-    base.move_by(get_random_vector(0, 10))
+    base.move_by(Helper.get_random_vector(0, 10))
+
     cv2.circle(frame, (int(base.position.x), int(base.position.y)), 13, (255,0,0), thickness=-1)
+
+    for enemy in enemys:
+        random_vector = Helper.get_random_vector(0, 10)
+        enemy_to_center_vector = base.position - enemy.position
+        enemy_vector = enemy_to_center_vector / enemy_to_center_vector.length() * random_vector.length() + random_vector
+        enemy.move_by(enemy_vector)
+
+        cv2.circle(frame, (int(enemy.position.x), int(enemy.position.y)), 7, (0,0,255), thickness=-1)
+
     cv2.imshow('Video2', frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break

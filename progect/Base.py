@@ -21,7 +21,6 @@ class Base:
         else:
             center_direction = self.area_center - self.position
             print(center_direction)
-            moving_vector = Vector(center_direction.x / center_direction.length() * vector.length(), 
-                                   center_direction.y / center_direction.length() * vector.length())
+            moving_vector = center_direction / center_direction.length() * vector.length()
             self.position += moving_vector
 
