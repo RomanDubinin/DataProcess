@@ -25,6 +25,11 @@ def close(enemy, moving_point):
 def get_not_killed_enemys(enemys, moving_points):
     return [enemy for enemy in enemys if all([not close(enemy, point) for point in moving_points])]
 
+def generate_new_enemys(enemys):
+    for i in range(len(enemys), Constants.ENEMYS_NUM):
+        enemys.append(Enemy(enemy_points[random.randint(0, len(enemy_points) - 1)]))
+    return enemys
+
 video_capture = cv2.VideoCapture(0)
 
 ret, average_frame = video_capture.read()
@@ -41,7 +46,6 @@ for i in range(Constants.ENEMYS_NUM):
     enemys.append(Enemy(enemy_points[random.randint(0, len(enemy_points) - 1)]))
 
 
-enemy = Enemy(Vector(0, 0))
 
 while True:
     # Capture frame-by-frame
@@ -53,11 +57,10 @@ while True:
         cv2.polylines(frame,approx,True,(0,255,255))
         enemys = get_not_killed_enemys(enemys, approx)
 
+    enemys = generate_new_enemys(enemys)
 
     base.move_by(Helper.get_random_vector(0, 10))
     cv2.circle(frame, (int(base.position.x), int(base.position.y)), 13, (255,0,0), thickness=-1)
-
-
 
     for enemy in enemys:
         move_enemy(enemy)
