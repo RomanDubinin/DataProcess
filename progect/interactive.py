@@ -2,6 +2,7 @@ import cv2
 import sys
 import numpy as np
 import random
+import math 
 
 import Constants
 import Helper
@@ -19,7 +20,7 @@ def move_enemy(enemy):
 
 def close(enemy, moving_point):
     p = Vector(moving_point[0][0], moving_point[0][1]) - enemy.position
-    return p.x < Constants.CONTOUR_EPS and p.y < Constants.CONTOUR_EPS
+    return abs(p.x) < Constants.CONTOUR_EPS and abs(p.y) < Constants.CONTOUR_EPS
 
 
 def get_not_killed_enemys(enemys, moving_points):
